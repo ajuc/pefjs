@@ -5,13 +5,13 @@ You can mail to me: ajuc00 on google email service.
 
 CREDITS.
 
-This project is inspired by jbpm ( http://www.jboss.org/jbpm  ), but is intended to be much simpler and less enterprisey :). I plan to avoid XML.
+This project is inspired by jbpm ( http://www.jboss.org/jbpm ), but is intended to be much simpler and less enterprisey :). I plan to avoid XML.
 Also there's no business in name, because intended use is engine for quest and dialog graphs in game I'm currently working on.   
 
 ELEVATOR PITCH
 
-This is aimple, extensible engine that makes it possible to run graphs specified with jsDot graphical graph editor (with some extensions).
-Processes are specified in format borrowed from jsDot and extended a little (but fully compatible with jsDot). It's JSON. Engine supports multiple execution tokens in one process instance and forking (and will support joining).
+This is a simple, extensible engine that makes it possible to run graphs specified with jsDot graphical graph editor (with some extensions).
+Processes are specified in format borrowed from jsDot and extended a little (but fully compatible with jsDot ( http://code.google.com/p/jsdot/ )). It's just JSON. Engine supports multiple execution tokens in one process instance and forking (and will support joining).
 Actions can be specified for each node, and actions work on provided externalState argument - you can pass anything there and process will run actions on it.     
 
 OVERVIEW
