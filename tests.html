@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8" />
+<title>Tests for pefjs (Process Engine for Java Script) library.</title>
+<link rel="stylesheet" href="qunit.css">
+<link rel="stylesheet" href="custom.css">
+</head>
+
+<body>
+	<h1 id="qunit-header">Tests</h1>
+	<h2 id="qunit-banner"></h2>
+	<ol id="qunit-tests"></ol>
+
+	<!-- jQuery -->
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+
+	<!-- testing framework -->
+	<script src="qunit.js"></script>
+
+	<!-- tested code -->
+	<script src="pefjs.js"></script>
+
+	<!-- data for testing (hidden by custom.css) -->
+	<div class="hidden data" id="empty_process_definition">{ "nodes":
+		[], "edges": [], "defaultNodeStencil": "circle", "defaultEdgeStencil":
+		"line" }</div>
+
+	<div class="hidden data" id="process_definition_2n1e_nofunctions">{
+	"nodes" : [
+			{
+				"name" : 1,
+				"label" : {
+					"type" : "plain",
+					"value" : "start"
+				},
+				"position" : [ 135, 93 ],
+				"stencil" : "circle",
+				"userData" : {
+					"data" : "{\"start\":true}"
+				}
+			},
+			{
+				"name" : 2,
+				"label" : {
+					"type" : "plain",
+					"value" : "stop"
+				},
+				"position" : [ 235, 93 ],
+				"stencil" : "circle",
+				"userData" : {
+					"data" : "{}"
+				}
+			} ],
+	"edges" : [ {
+		"src" : 1,
+		"dst" : 2,
+		"label" : null,
+		"stencil" : "line",
+		"userData" : {
+			"data" : "{}"
+		}
+	} ],
+	"defaultNodeStencil" : "circle",
+	"defaultEdgeStencil" : "line"
+	}</div>
+	
+	<div class="hidden data" id="process_definition_2n1e_functions">{
+	"nodes" : [
+			{
+				"name" : 1,
+				"label" : {
+					"type" : "plain",
+					"value" : "start"
+				},
+				"position" : [ 135, 93 ],
+				"stencil" : "circle",
+				"userData" : {
+					"data" : "{\"start\":true,\"message\" : function(game) {return game;},\"action\": function(game) {return game;}}"
+				}
+			},
+			{
+				"name" : 2,
+				"label" : {
+					"type" : "plain",
+					"value" : "stop"
+				},
+				"position" : [ 235, 93 ],
+				"stencil" : "circle",
+				"userData" : {
+					"data" : "{\"message\" : function(game) {return game;},\"action\": function(game) {return game;}}"
+				}
+			} ],
+	"edges" : [ {
+		"src" : 1,
+		"dst" : 2,
+		"label" : null,
+		"stencil" : "line",
+		"userData" : {
+			"data" : "{\"condition\": function(game){return true;}, \"action\":function(game) {return game;}}"
+		}
+	} ],
+	"defaultNodeStencil" : "circle",
+	"defaultEdgeStencil" : "line"
+	}</div>
+
+	<div class="hidden data" id="big_process_definition">
+{"nodes":[{"name":1,"label":{"type":"plain","value":"tutorial start"},"position":[246,30],"stencil":"hexagon","userData":{"data":"{\"start\":true,\n    \"message\": function(game) {\n        return \"Welcome to the tutorial, dear Player.\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":2,"label":{"type":"plain","value":"start"},"position":[26,27],"stencil":"circle","userData":{}},{"name":3,"label":{"type":"plain","value":"corner"},"position":[10000,10000],"stencil":"circle","userData":{}},{"name":4,"label":{"type":"plain","value":"turn up"},"position":[356,29.5],"stencil":"box","userData":{"data":"{\n    \"message\": function(game) {\n        return \"Now try to turn the rocket nose straight up.\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":5,"label":{"type":"plain","value":"turn left or right"},"position":[278,84.5],"stencil":"box","userData":{"data":"{\n    \"message\": function(game) {\n        return \"First, try to turn left and right. Press <b>left arrow</b> to turn left,\n\t\t\t<b>righ arrow</b> to turn right.\n\t\t\tNotice, that when you turn your ship, your rotation engine is enabled, and it uses up\n\t\t\tfuel or energy (depending on kind of the engine).\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":6,"label":{"type":"plain","value":"shoot"},"position":[486,84.5],"stencil":"box","userData":{"data":"{\n    \"message\": function(game) {\n        return \"Besides engines, your ship also has tools. There are many kinds of tools, the most used are probably weapons. To use current tool press <b>ctrl</b> key. The tool will be used. Your current tool is probably gun, so using it will shoot a bullet. Shooting gun uses up ammunition, which you can see on the <b>top right corner</b> of the screen, on the black bar titled <b>ammo</b>. Now press <b>ctrl</b> key.\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":7,"label":{"type":"plain","value":"talk with sister"},"position":[141,224],"stencil":"box","userData":{}},{"name":8,"label":{"type":"plain","value":"spray plants"},"position":[300,223],"stencil":"box","userData":{}},{"name":9,"label":{"type":"plain","value":"thrust"},"position":[396,84.5],"stencil":"box","userData":{"data":"{\n    \"message\": function(game) {\n        return \"Great. Press <b>up arrow</b>. Main engine of your ship will engage, and rocket will go forward. Main engine uses fuel or energy, just like rotation engine. You can see how much fuel and energy you have on <b>top right corner</b> of the screen on the green (fuel), and blue (energy) bars.\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":10,"label":{"type":"plain","value":"fall back"},"position":[453,29.5],"stencil":"box","userData":{"data":"{\n    \"message\": function(game) {\n        return \"OK, you're flying. Be careful, don't press the <b>up arrow</b> for too long, because rockets don't have brakes, and it's easy to collide with some wall. The best way to fly is to always keep the nose of your rocket more or less straight up, and only turn slightly left or right, when you need to go sideways. That way, you can always correct for gravitation. Now fall back to earth (stop pressing <b>up arrow</b> and engine will disable).\";\n    },\n    \"action\": function(game) {\n    }\n}"}},{"name":11,"label":{"type":"plain","value":"end"},"position":[563,84],"stencil":"concave hexagon","userData":{"data":"{\n    \"message\": function(game) {\n        return \"Congratulation. You've finished our little school and earned pilot licence. Good luck, you'll need it.\";\n    },\n    \"action\": function(game) {\n        game.mode = \"campaign\";\n    }\n}"}},{"name":12,"label":{"type":"plain","value":"farm end"},"position":[428,223],"stencil":"hexagon","userData":{}},{"name":13,"label":{"type":"plain","value":"farm start"},"position":[140,175],"stencil":"hexagon","userData":{}},{"name":14,"label":{"type":"plain","value":"fly to farm"},"position":[279,176],"stencil":"box","userData":{}},{"name":15,"label":{"type":"plain","value":"defend yourself"},"position":[216,397],"stencil":"box","userData":{}},{"name":16,"label":{"type":"plain","value":"return to village"},"position":[326,347],"stencil":"box","userData":{}},{"name":17,"label":{"type":"plain","value":"defend wind turbines"},"position":[390,396],"stencil":"box","userData":{}},{"name":18,"label":{"type":"plain","value":"security malfunction"},"position":[140,350],"stencil":"hexagon","userData":{}},{"name":19,"label":{"type":"plain","value":19},"position":[141,479],"stencil":"hexagon","userData":{}},{"name":20,"label":{"type":"plain","value":20},"position":[523,527],"stencil":"hexagon","userData":{}},{"name":21,"label":{"type":"plain","value":21},"position":[830,525],"stencil":"box","userData":{}},{"name":22,"label":{"type":"plain","value":22},"position":[883,465],"stencil":"box","userData":{}},{"name":23,"label":{"type":"plain","value":23},"position":[916,382],"stencil":"box","userData":{}},{"name":24,"label":{"type":"plain","value":"go to meeting"},"position":[476,347],"stencil":"box","userData":{}}],"edges":[{"src":2,"dst":1,"label":{"type":"plain","value":"tutorial"},"stencil":"directed line","userData":{"data":"{\n    \"condition\":function(game) {\n        return game.mode===\"tutorial\";\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":1,"dst":5,"label":null,"stencil":"line","userData":{"data":"{\n    \"condition\":function(game) {\n      return true; //find a way to specify timeouts as anonymous function returning true after given time\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":5,"dst":4,"label":null,"stencil":"line","userData":{"data":"{\n    \"condition\":function(game) {\n      return game.players[game.currentPlayer].actionsPerformed[\"TurnLeft\"] ||\n        game.players[game.currentPlayer].actionsPerformed[\"TurnRight\"];\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":4,"dst":9,"label":null,"stencil":"line","userData":{"data":"{\n\"condition\": function(game) {\n  return Math.abs(game.\n    players[game.currentPlayer].orientation\n  ) < 0.1;\n},\n\"action\": function(game) {\n}\n}"}},{"src":9,"dst":10,"label":null,"stencil":"line","userData":{"data":"{\n    \"condition\":function(game) {\n      return game.players[game.currentPlayer].actionsPerformed[\"Thrust\"];\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":10,"dst":6,"label":null,"stencil":"line","userData":{"data":"{\n    \"condition\":function(game) {\n      return !game.players[game.currentPlayer].actionsPerformed[\"Thrust\"];\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":6,"dst":11,"label":null,"stencil":"line","userData":{"data":"{\n    \"condition\":function(game) {\n      return game.players[game.currentPlayer].actionsPerformed[\"Use\"];\n    },\n    \"action\":function(game) {\n    }\n}"}},{"src":2,"dst":13,"label":{"type":"plain","value":"game"},"stencil":"line","userData":{"data":"function(game) {\n    return game.mode===\"campaign\";\n}"}},{"src":13,"dst":7,"label":null,"stencil":"line","userData":{}},{"src":7,"dst":14,"label":null,"stencil":"line","userData":{}},{"src":14,"dst":8,"label":null,"stencil":"line","userData":{}},{"src":15,"dst":16,"label":null,"stencil":"line","userData":{}},{"src":18,"dst":15,"label":null,"stencil":"line","userData":{}},{"src":8,"dst":12,"label":null,"stencil":"line","userData":{}},{"src":12,"dst":18,"label":null,"stencil":"line","userData":{}},{"src":16,"dst":17,"label":null,"stencil":"line","userData":{}},{"src":17,"dst":24,"label":null,"stencil":"line","userData":{}},{"src":11,"dst":13,"label":null,"stencil":"line","userData":{}}],"defaultNodeStencil":"circle","defaultEdgeStencil":"line"}
+	</div>
+
+	<div class="hidden data" id="process_definition_3n2e">
+{"nodes":[{"name":1,"label":{"type":"plain","value":"start"},"position":[114,140],"stencil":"circle","userData":{"data":"{\"start\":true}"}},{"name":2,"label":{"type":"plain","value":"start"},"position":[110,232],"stencil":"circle","userData":{"data":"{\"start\":true}"}},{"name":3,"label":{"type":"plain","value":"stop 1"},"position":[311,132],"stencil":"circle","userData":{}},{"name":4,"label":{"type":"plain","value":"stop 2"},"position":[311,243],"stencil":"circle","userData":{}}],"edges":[{"src":1,"dst":4,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return true;\n  }\n}"}},{"src":2,"dst":3,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return true;\n  }\n}"}},{"src":2,"dst":4,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return false;\n  }\n}"}},{"src":1,"dst":3,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return false;\n  }\n}"}}],"defaultNodeStencil":"circle","defaultEdgeStencil":"line"}
+	</div>
+
+	<div class="hidden data" id="process_definition_3n2e_wait_for_external_state">
+{"nodes":[{"name":1,"label":{"type":"plain","value":"start"},"position":[114,140],"stencil":"circle","userData":{"data":"{\"start\":true}"}},{"name":2,"label":{"type":"plain","value":"start"},"position":[110,232],"stencil":"circle","userData":{"data":"{\"start\":true}"}},{"name":3,"label":{"type":"plain","value":"stop 1"},"position":[311,132],"stencil":"circle","userData":{}},{"name":4,"label":{"type":"plain","value":"stop 2"},"position":[311,243],"stencil":"circle","userData":{}}],"edges":[{"src":1,"dst":4,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n       return game[\"1 to 4\"] === true;\n  }\n}"}},{"src":2,"dst":3,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return game[\"2 to 3\"] === true;\n  }\n}"}},{"src":2,"dst":4,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return game[\"2 to 4\"] === true;\n  }\n}"}},{"src":1,"dst":3,"label":null,"stencil":"line","userData":{"data":"{\n  \"condition\": function(game) {\n    return game[\"1 to 3\"] === true;\n  }\n}"}}],"defaultNodeStencil":"circle","defaultEdgeStencil":"line"}
+	</div>
+
+	<div class="hidden data" id="process_definition_1_fork_2">
+{"nodes":[{"name":1,"label":{"type":"plain","value":"start"},"position":[83,228],"stencil":"circle","userData":{"data":"{\"start\":true}"}},{"name":2,"label":{"type":"plain","value":"fork here"},"position":[179,231],"stencil":"concave hexagon","userData":{"data":"{\n  \"fork\": true\n}"}},{"name":3,"label":{"type":"plain","value":"stop 1"},"position":[293,162],"stencil":"circle","userData":{}},{"name":4,"label":{"type":"plain","value":"stop 2"},"position":[293,315],"stencil":"circle","userData":{}}],"edges":[{"src":1,"dst":2,"label":null,"stencil":"line","userData":{}},{"src":2,"dst":3,"label":null,"stencil":"line","userData":{}},{"src":2,"dst":4,"label":null,"stencil":"line","userData":{}}],"defaultNodeStencil":"circle","defaultEdgeStencil":"line"}
+	</div>
+	
+	<div class="hidden data" id="actions_sequence">
+{"nodes":[{"name":1,"label":{"type":"plain","value":"start"},"position":[79,206],"stencil":"circle","userData":{"data":"{\n  \"start\": true,\n  \"action\": function(game) {\n    game[\"start action performed\"] = true;\n  }\n}"}},{"name":2,"label":{"type":"plain","value":"action 1"},"position":[228,201],"stencil":"circle","userData":{"data":"{\n  \"action\": function(game) {\n    game[\"action 1 performed\"] = true;\n  }\n}"}},{"name":3,"label":{"type":"plain","value":"action 2"},"position":[368,195],"stencil":"circle","userData":{"data":"{\n  \"action\": function(game) {\n    game[\"action 2 performed\"] = true;\n  }\n}"}},{"name":4,"label":{"type":"plain","value":"action 3"},"position":[509,187],"stencil":"circle","userData":{"data":"{\n  \"action\": function(game) {\n    game[\"action 3 performed\"] = true;\n  }\n}"}}],"edges":[{"src":1,"dst":2,"label":null,"stencil":"line","userData":{}},{"src":2,"dst":3,"label":null,"stencil":"line","userData":{}},{"src":3,"dst":4,"label":null,"stencil":"line","userData":{}}],"defaultNodeStencil":"circle","defaultEdgeStencil":"line"}
+	</div>
+	
+	<!-- tests -->
+	<script>
+		$(document).ready(function() {
+			runTests();
+		});
+	
+function runTests() {
+	module("see if testing framework works :)");
+
+	test("hello", function() {
+        	ok(true, "world");
+	});
+
+	module("loading empty processdefinition");
+
+	test("loading empty processdefinition - default parameter values", function() {
+		var data = $("#empty_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		deepEqual(
+			pd,
+			{
+				"nodes": [],
+				"edges": [],
+				"defaultNodeStencil": "circle",
+				"defaultEdgeStencil": "line",
+				"nodeNumbersIndexedByName": {},
+				"outgoingTransitionsNumbersIndexedBySrcName": {},
+				"validation": true
+			}
+		);
+        });
+
+	test("loading empty processdefinition - without indexing, other values default", function() {
+		var data = $("#empty_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, false, false);
+		deepEqual(
+			pd,
+			{
+				"nodes": [],
+				"edges": [],
+				"defaultNodeStencil": "circle",
+				"defaultEdgeStencil": "line",
+				"validation": true
+			}
+		);
+        });
+
+	test("loading empty processdefinition - with some indexing, other values default", function() {
+		var data = $("#empty_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, false, true);
+		deepEqual(
+			pd,
+			{
+				"nodes": [],
+				"edges": [],
+				"defaultNodeStencil": "circle",
+				"defaultEdgeStencil": "line",
+				"outgoingTransitionsNumbersIndexedBySrcName": {},
+				"validation": true
+			}
+		);
+        });
+
+
+	test("loading empty processdefinition - without indexing, additional mapping, valiation default", function() {
+		var data = $("#empty_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, false, false, { "some_key":"some_other_key" });
+		deepEqual(
+			pd,
+			{
+				"nodes": [],
+				"edges": [],
+				"defaultNodeStencil": "circle",
+				"defaultEdgeStencil": "line",
+				"validation": true
+			}
+		);
+        });
+
+	test("loading empty processdefinition - without indexing, additional mapping, valiation false", function() {
+		var data = $("#empty_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, false, false, { "some_key":"some_other_key" }, false);
+		deepEqual(
+			pd,
+			{
+				"nodes": [],
+				"edges": [],
+				"defaultNodeStencil": "circle",
+				"defaultEdgeStencil": "line",
+				"validation": false
+			}
+		);
+        });
+
+	module("loading processdefinition with 2 nodes and one edge");
+
+	test("default parameters,  graph without functions inside (because deep equal don't work on functions)", function() {
+		var data = $("#process_definition_2n1e_nofunctions").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		deepEqual(
+			pd,
+			{
+			  "defaultEdgeStencil": "line",
+			  "defaultNodeStencil": "circle",
+			  "edges": [
+			    {
+			      "dst": 2,
+			      "label": null,
+			      "src": 1,
+			      "stencil": "line",
+			      "userData": {
+			        "data": "{}"
+			      }
+			    }
+			  ],
+			  "nodeNumbersIndexedByName": {
+			    "1": "0",
+			    "2": "1"
+			  },
+			  "nodes": [
+			    {
+			      "label": {
+			        "type": "plain",
+			        "value": "start"
+			      },
+			      "name": 1,
+			      "position": [
+			        135,
+			        93
+			      ],
+			      "stencil": "circle",
+			      "userData": {
+			    	  "data": "{\"start\":true}"
+			      },
+			      "start": true
+			    },
+			    {
+			      "label": {
+			        "type": "plain",
+			        "value": "stop"
+			      },
+			      "name": 2,
+			      "position": [
+			        235,
+			        93
+			      ],
+			      "stencil": "circle",
+			      "userData": {
+			        "data": "{}"
+			      }
+			    }
+			  ],
+			  "outgoingTransitionsNumbersIndexedBySrcName": {
+			    "1": [
+			      "0"
+			    ],
+			    "2": []
+			  },
+			  "validation": true
+			}
+		);
+        });
+
+	test("default parameters,  graph with functions inside (but we only check functions, because deepEqual don't work on functions)", function() {
+		var data = $("#process_definition_2n1e_functions").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		
+		equal(pd.nodes[0]["action"](1), 1); equal(pd.nodes[0]["action"]("a"), "a");
+		equal(pd.nodes[0]["message"], undefined); // because we didn't passed mapping { "message: "message" } and "message is not extraced from userData.data by default
+
+		equal(pd.nodes[1]["action"](1), 1); equal(pd.nodes[1]["action"]("a"), "a");
+		equal(pd.nodes[1]["message"], undefined); // because we didn't passed mapping { "message: "message" } and "message is not extraced from userData.data by default
+
+		equal(pd.edges[0]["condition"](1), true); equal(pd.edges[0]["condition"]("a"), true);
+		equal(pd.edges[0]["action"](1), 1); equal(pd.edges[0]["action"]("a"), "a");
+    });
+
+	test("graph with functions inside (but we only check functions, because deepEqual don't work on functions), also copying message", function() {
+		var data = $("#process_definition_2n1e_functions").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message1"});
+		
+		equal(pd.nodes[0]["action"](1), 1); equal(pd.nodes[0]["action"]("a"), "a");
+		equal(pd.nodes[0]["message1"](1), 1); equal(pd.nodes[0]["message1"]("a"), "a");
+
+		equal(pd.nodes[1]["action"](1), 1); equal(pd.nodes[1]["action"]("a"), "a");
+		equal(pd.nodes[1]["message1"](1), 1); equal(pd.nodes[1]["message1"]("a"), "a");
+
+		equal(pd.edges[0]["condition"](1), true); equal(pd.edges[0]["condition"]("a"), true);
+		equal(pd.edges[0]["action"](1), 1); equal(pd.edges[0]["action"]("a"), "a");
+    });
+	
+	module("loading big processdefinition");
+	test("see if there are no exceptions, when loaded with default params", function() {
+		var data = $("#big_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		
+		equal(1,1);
+    });
+
+	test("see if there are no exceptions, when loaded with messagge extracting", function() {
+		var data = $("#big_process_definition").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		equal(1,1);
+    });
+	
+	module("starting process instance");
+	test("process_definition_2n1e_functions", function() {
+		var data = $("#process_definition_2n1e_functions").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var pi = ajuc.pefjs.startProcessInstance(pd);
+		ok(pi.definition !== undefined);
+		deepEqual(pi.tokens, [1]);
+    });
+
+	test("process_definition_3n2e", function() {
+		var data = $("#process_definition_3n2e").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var pi = ajuc.pefjs.startProcessInstance(pd);
+		ok(pi.definition !== undefined);
+		deepEqual(pi.tokens, [1,2]);
+    });
+
+	module("propagating token");
+	test("process_definition_3n2e no exceptions ?", function() {
+		var data = $("#process_definition_3n2e").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var pi = ajuc.pefjs.startProcessInstance(pd);
+		var externalState = {};
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		ok(1===1);
+    });
+
+	test("process_definition_3n2e tokens ok?", function() {
+		var data = $("#process_definition_3n2e").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var pi = ajuc.pefjs.startProcessInstance(pd);
+		var externalState = {};
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		
+		ok(
+				(pi.tokens[0] === 3 && pi.tokens[1] === 4 && pi.tokens.length == 2) ||
+				(pi.tokens[0] === 4 && pi.tokens[1] === 3 && pi.tokens.length == 2)
+		);
+    });
+
+	test("process_definition_3n2e_wait_for_external_state tokens ok?", function() {
+		var data = $("#process_definition_3n2e_wait_for_external_state").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var externalState = {};
+		var pi = ajuc.pefjs.startProcessInstance(pd, externalState);
+		
+		
+		deepEqual(pi.tokens, [1,2]);
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		deepEqual(pi.tokens, [1,2]);
+		
+		externalState["1 to 3"] = true;
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		ok((pi.tokens[0] === 3 && pi.tokens[1] === 2 && pi.tokens.length == 2)
+		|| (pi.tokens[0] === 2 && pi.tokens[1] === 3 && pi.tokens.length == 2)
+		);
+		
+		externalState["2 to 4"] = true;
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		ok((pi.tokens[0] === 3 && pi.tokens[1] === 4 && pi.tokens.length == 2)
+		|| (pi.tokens[0] === 4 && pi.tokens[1] === 3 && pi.tokens.length == 2)
+		);
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		ok((pi.tokens[0] === 3 && pi.tokens[1] === 4 && pi.tokens.length == 2)
+		|| (pi.tokens[0] === 4 && pi.tokens[1] === 3 && pi.tokens.length == 2)
+		);
+    });
+
+	test("process_definition_3n2e_wait_for_external_state exceptions when too many true transitions", function() {
+		var data = $("#process_definition_3n2e_wait_for_external_state").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var externalState = {};
+		var pi = ajuc.pefjs.startProcessInstance(pd, externalState);
+
+		
+		externalState["1 to 3"] = true;
+		externalState["1 to 4"] = true;
+		raises( function() {
+			ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		});
+		
+    });
+	
+	module("forking while propagating");
+	test("one node forks to two nodes", function() {
+		var data = $("#process_definition_1_fork_2").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data, true, true, {"message":"message"});
+		
+		var externalState = {};
+		var pi = ajuc.pefjs.startProcessInstance(pd, externalState);
+
+		
+		deepEqual(pi.tokens, [1]);
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		deepEqual(pi.tokens, [2]); // because we have recursive propagation === false by default - see loadProcessDefinition comments
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		ok((pi.tokens[0] === 3 && pi.tokens[1] === 4 && pi.tokens.length == 2)
+		|| (pi.tokens[0] === 4 && pi.tokens[1] === 3 && pi.tokens.length == 2)
+		);
+		
+    });
+	
+	module("actions");
+	test("4 actions changing external state", function() {
+		var data = $("#actions_sequence").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		
+		var externalState = {};
+		var pi = ajuc.pefjs.startProcessInstance(pd, externalState);
+
+		deepEqual(externalState, {"start action performed": true});
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		deepEqual(externalState, {"start action performed": true, "action 1 performed": true});
+
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		deepEqual(externalState, {"start action performed": true, "action 1 performed": true, "action 2 performed": true});
+
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
+		
+		deepEqual(externalState, {"start action performed": true, "action 1 performed": true, "action 2 performed": true, "action 3 performed": true});
+    });
+	
+	test("disabling actions", function() {
+		var data = $("#actions_sequence").text();
+		var pd = ajuc.pefjs.loadProcessDefinition(data);
+		
+		var externalState = {};
+		var pi = ajuc.pefjs.startProcessInstance(pd, externalState, false);
+
+		deepEqual(externalState, {});
+		
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState, false);
+		
+		deepEqual(externalState, {});
+
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState, false);
+		
+		deepEqual(externalState, {});
+
+		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState, false);
+		
+		deepEqual(externalState, {});
+    });
+	
+	module("messages");
+	
+	
+<!-- TODO -->
+	
+};
+	
+
+
+        </script>
+</body>
+</html>
