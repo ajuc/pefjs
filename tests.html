@@ -523,14 +523,14 @@ function runTests() {
 		externalState["allow 1 to 3 transition"] = true;
 		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
 		
-		deepEqual(pi.tokens, [1, 2]); // condition 1->3 was true, but all conditions on incoming transitions of join
+		deepEqual(pi.tokens, [2, 3]); // condition 1->3 was true, but all conditions on incoming transitions of join
 									  // must be true for tokens to enter join node
 									  // AND there must be token on each incoming transition
 		
 		externalState["allow 2 to 3 transition"] = true;
 		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState); // join happened
 		
-		deepEqual(pi.tokens, [3]); // [3] and not [4] because we have recursive propagation === false by default - see loadProcessDefinition comments
+		deepEqual(pi.tokens, [4]);
 		
 		ajuc.pefjs.destructivelyPropagateTokens(pi, pd, externalState);
 		

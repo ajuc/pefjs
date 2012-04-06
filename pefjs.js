@@ -321,7 +321,7 @@ ajuc.pefjs = (function() {
 		userDataKeysToEval["start"] = "start";
 		userDataKeysToEval["fork"] = "fork";
 		userDataKeysToEval["join"] = "join";
-		//userDataKeysToEval["kill"] = "kill"; // TODO
+		userDataKeysToEval["kill"] = "kill";
 		
 		
 		//userDataKeysToEval["message"] = "message"; // and this really isn't,
@@ -447,6 +447,7 @@ ajuc.pefjs = (function() {
 		}
 		
 		var tokenNo = -1;
+		var tokenKey = "";
 		var currentToken = "";
 		var currentNode = {};
 		var outgoingTransitions = [];
@@ -458,51 +459,62 @@ ajuc.pefjs = (function() {
 		var counter;
 		var k,m;
 
-		var tmpTokens = [];
+		var tmpTokens = {};
 		for (var j in instance.tokens) {
-			tmpTokens.push(instance.tokens[j]);
+			tmpTokens[instance.tokens[j]] = instance.tokens[j];
 		};
-		for (tokenNo in tmpTokens) {
-			currentToken = tmpTokens[tokenNo];
+		for (tokenKey in tmpTokens) {
+			tokenNo = tmpTokens[tokenKey];
+			currentToken = tokenNo;
 			currentNode = getNodeByName(definition, currentToken); // definition.nodes[];
 			
 			outgoingTransitions = getOutgoingTransitions(definition, currentToken);
 
-			if (currentNode.fork === true && currentNode.join === true) {
-				throw {
-					name: "Join and fork in one node.",
-					level: "blocking",
-					message: "Node " + currentNode.name + " is both fork and join - we do not support such things."
+			if (currentNode.join === true && (currentNode.fork === true || outgoingTransitions.length === 1)) {
+				k=-1;
+				counter = 0;
+				
+				for(k in instance.tokens) { // here it must be instance.tokens, and not tmpTokens, because we are counting how many times
+					if (instance.tokens[k] === currentNode.name) {
+						counter += 1; // I don't like k++
+					}
 				}
-			} else if (currentNode.fork === true) {
+				incomingTransitions = getIncomingTransitions(definition, currentToken);
+				if ( counter >= incomingTransitions.length ) {
+					for (k=0; k<counter; k++) {
+						destructivelyRemoveToken(instance.tokens, currentToken);
+					}
+					for (outgoingTransitionNo in outgoingTransitions) {
+						if (definition.validation && outgoingTransitions[outgoingTransitionNo].condition !== undefined) {
+							throw {
+								name: "Condition on outgoing transition from JOIN node.",
+								level: "blocking",
+								message: "There CANNOT be conditions on outgoing transitions from JOIN node, and still there are (node " + currentNode.name + ")"
+							};
+						}
+						onEnterNode(definition, outgoingTransitions[outgoingTransitionNo].dst, externalState, executeActions);
+						instance.tokens.push(
+								outgoingTransitions[outgoingTransitionNo].dst
+						);
+					}
+				};
+			} else if (currentNode.fork === true && currentNode.join !== true) {
 				//propagate to all outgoing transitions
 				// and remove from currentNode
 				destructivelyRemoveToken(instance.tokens, currentToken);
 				for (outgoingTransitionNo in outgoingTransitions) {
+					if (definition.validation && outgoingTransitions[outgoingTransitionNo].condition !== undefined) {
+						throw {
+							name: "Condition on outgoing transition from JOIN node.",
+							level: "blocking",
+							message: "There CANNOT be conditions on outgoing transitions from JOIN node, and still there are (node " + currentNode.name + ")"
+						};
+					}
 					onEnterNode(definition, outgoingTransitions[outgoingTransitionNo].dst, externalState, executeActions);
 					instance.tokens.push(
 							outgoingTransitions[outgoingTransitionNo].dst
 					);
 				}
-			} else if (currentNode.join === true) {
-//				k=-1;
-//				counter = 0;
-//				
-//				for(k in tmpTokens) {
-//					if (k === currentNode.name) {
-//						counter += 1; // I don't like k++
-//					}
-//				}
-//				incomingTransitions = getIncomingTransitions();
-//				for(m in incomingTransitions) {
-//					if (k === currentNode.name) {
-//						counter += 1; // I don't like k++
-//					}
-//				}
-				//TOTHINK - maybe it should work like that, instead, tokens will wait BEFORE JOIN
-				// and only when on all incoming transitions to join there are tokens, and all these transitions have true conditions,
-				//tokens can propagate to join and merge into one token 
-				
 			} else {
 				// calculate conditions on each transition
 				// maybe validate
@@ -548,7 +560,7 @@ ajuc.pefjs = (function() {
 						throw "More than one transition " +
 						"has condition that returns true " +
 						"in a NON-FORK node (name=="+ currentNode.name +")" +
-						"specifically: " + specifically
+						"specifically: " + specifically;
 					}
 				}
 				// propagate if any true transitions

@@ -49,6 +49,13 @@ EDITOR
 I use JSON data fromat compatible with (or stolen from :) ) jsDot graph editor ( http://code.google.com/p/jsdot/ ), so it's possible and recommended to use jsDot to specify your process definitions.
 I had to extend jsDot a little to allow arbitrary data to be edited, I'll publish my version of jsDot shortly, I just need to clean it up a little.
 
+NODE TYPES
+	
+	start - at the start of process instance in each start node token appears. Can't be also a join.
+	fork - when token is there, in next propagation token "forks" into as many tokens, as there is outgoing transitions, and one copy of the token moves throught each of the transitions at once. Original token is destroyed. There CANNOT be conditions on outgoing transitions.
+	join - when token comes here, it waits until as many other tokens come, as there is incoming transitions. When this happens - tokens merge into a new token, and moves thorught outgoing transitions. There CANNOT be conditions on outgoing transition.
+	kill - when token comes here, it is destroyed in next propagation. 
+
 TESTS
 
 I included tests suite in tests.html. Not complete coverage, but most features are touched by some tests.
