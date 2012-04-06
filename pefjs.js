@@ -133,6 +133,35 @@ ajuc.pefjs = (function() {
 		return result;
 	}
 
+	/// Return incoming transitions (edges) ending on the node with name == nodeName.
+	/// If there is index - do it quickly using index.
+	/// If there is no index - do it painfully slow, but do it neverthless :)
+	function getIncomingTransitions(processDefinition, nodeName) {
+		var result = [];
+		var numbers = [];
+		var i=0;
+		var edgeNo=-1;
+		
+		if (processDefinition.incomingTransitionsNumbersIndexedByDstName !== undefined) {
+			numbers =
+				processDefinition.
+					incomingTransitionsNumbersIndexedByDstName[nodeName];
+			for (i in numbers) {
+				result.push(processDefinition.edges[numbers[i]]);
+			}
+			return result;
+		}
+
+		//painfully slow path
+		for (edgeNo in processDefinition.edges) {
+			if (processDefinition.edges[edgeNo].dst===nodeName) {
+				result.push(processDefinition.edges[edgeNo]);
+			}
+		}
+		
+		return result;
+	}
+	
 	/// calculate index of node numbers by node name
 	function indexOfNodesByName(processDefinition) {
 		var index = {};
@@ -169,7 +198,29 @@ ajuc.pefjs = (function() {
 		return index;
 	}
 
+	/// calculate index of incoming transitions by node name
+	function indexOfIncomingTransitionsByNodeName(processDefinition) {
+		var index = {};
+		var inTransitionsForCurrentNode = [];
+		var nodeNo;
+		var edgeNo;
 
+		for (nodeNo in processDefinition.nodes) {
+			
+			inTransitionsForCurrentNode = [];
+			for (edgeNo in processDefinition.edges) {
+				if (processDefinition.edges[edgeNo].dst === 
+					processDefinition.nodes[nodeNo].name) {
+				
+					inTransitionsForCurrentNode.push(edgeNo);
+				}
+			}
+			index[processDefinition.nodes[nodeNo].name] =
+				inTransitionsForCurrentNode;
+		}
+
+		return index;
+	}
 	/// TOCOMMENT
 	function destructivelyEvalAndExtractKeys(nodeOrEdge, mapping) {
 		var keyInNodeOrEdge, keyInMapping, evaled;
@@ -211,7 +262,12 @@ ajuc.pefjs = (function() {
 	///
 	/// By default also calculate index of outgoing transitions for each node name
 	/// to speed up using the processdefinition later
-	/// but you can set argument indexNodesByName to false for slower execution
+	/// but you can set argument indexOutgoingTransitionsByNodeName to false for slower execution
+	/// but less memory consumption (not recommended).
+	///
+	/// Te same goes for index of incoming transitions for each node name
+	/// to speed up using the processdefinition later
+	/// but you can set argument indexIncomingTransitionsByNodeName to false for slower execution
 	/// but less memory consumption (not recommended).
 	///
 	/// This function also evaluates (using infamous eval) keys from
@@ -234,6 +290,7 @@ ajuc.pefjs = (function() {
 			textualRepresentation,
 			indexNodesByName,
 			indexOutgoingTransitionsByNodeName,
+			indexIncomingTransitionsByNodeName,
 			userDataKeysToEval,
 			validation,
 			recursivePropagation
@@ -244,6 +301,9 @@ ajuc.pefjs = (function() {
 		}
 		if (indexOutgoingTransitionsByNodeName === undefined) {
 			indexOutgoingTransitionsByNodeName = true;
+		}
+		if (indexIncomingTransitionsByNodeName === undefined) {
+			indexIncomingTransitionsByNodeName = true;
 		}
 		if (userDataKeysToEval === undefined) {
 			userDataKeysToEval = {};
@@ -260,6 +320,7 @@ ajuc.pefjs = (function() {
 		userDataKeysToEval["condition"] = "condition";
 		userDataKeysToEval["start"] = "start";
 		userDataKeysToEval["fork"] = "fork";
+		userDataKeysToEval["join"] = "join";
 		//userDataKeysToEval["kill"] = "kill"; // TODO
 		
 		
@@ -298,7 +359,11 @@ ajuc.pefjs = (function() {
 			processDefinition.outgoingTransitionsNumbersIndexedBySrcName =
 				indexOfOutgoingTransitionsByNodeName(processDefinition);
 		}
-
+		if (indexIncomingTransitionsByNodeName) {
+			processDefinition.incomingTransitionsNumbersIndexedByDstName =
+				indexOfIncomingTransitionsByNodeName(processDefinition);
+		}
+		
 		processDefinition.validation = validation;
 
 		return processDefinition;
@@ -385,10 +450,13 @@ ajuc.pefjs = (function() {
 		var currentToken = "";
 		var currentNode = {};
 		var outgoingTransitions = [];
+		var incomingTransitions = [];
 		var outgoingConditions = [];
 		var firstTrueConditionNo = -1;
 		var numberOfTransitionsThatReturnsTrue = 0;
 		var outgoingTransitionNo = -1;
+		var counter;
+		var k,m;
 
 		var tmpTokens = [];
 		for (var j in instance.tokens) {
@@ -400,7 +468,13 @@ ajuc.pefjs = (function() {
 			
 			outgoingTransitions = getOutgoingTransitions(definition, currentToken);
 
-			if (currentNode.fork === true) {
+			if (currentNode.fork === true && currentNode.join === true) {
+				throw {
+					name: "Join and fork in one node.",
+					level: "blocking",
+					message: "Node " + currentNode.name + " is both fork and join - we do not support such things."
+				}
+			} else if (currentNode.fork === true) {
 				//propagate to all outgoing transitions
 				// and remove from currentNode
 				destructivelyRemoveToken(instance.tokens, currentToken);
@@ -410,6 +484,25 @@ ajuc.pefjs = (function() {
 							outgoingTransitions[outgoingTransitionNo].dst
 					);
 				}
+			} else if (currentNode.join === true) {
+//				k=-1;
+//				counter = 0;
+//				
+//				for(k in tmpTokens) {
+//					if (k === currentNode.name) {
+//						counter += 1; // I don't like k++
+//					}
+//				}
+//				incomingTransitions = getIncomingTransitions();
+//				for(m in incomingTransitions) {
+//					if (k === currentNode.name) {
+//						counter += 1; // I don't like k++
+//					}
+//				}
+				//TOTHINK - maybe it should work like that, instead, tokens will wait BEFORE JOIN
+				// and only when on all incoming transitions to join there are tokens, and all these transitions have true conditions,
+				//tokens can propagate to join and merge into one token 
+				
 			} else {
 				// calculate conditions on each transition
 				// maybe validate
